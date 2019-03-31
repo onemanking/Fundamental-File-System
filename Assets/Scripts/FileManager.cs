@@ -6,10 +6,9 @@ using UnityEngine;
 
 public class FileManager : MonoBehaviour {
 
-    [HideInInspector]
-    public string directory;
+    private string directory;
 
-    public bool onBrowse;
+    private string currentSaveImagePath;
 
     void Start () {
         directory = UnityEngine.Application.persistentDataPath;
@@ -60,15 +59,20 @@ public class FileManager : MonoBehaviour {
         return Path.GetDirectoryName (directoryPath) + Path.DirectorySeparatorChar;
     }
 
-    public Texture2D SavePNG (byte[] bytes) {
+    public void SavePNG (byte[] bytes) {
         string path = SaveFilePanel ("Save", "ScreenShot.png");
         if (!string.IsNullOrEmpty (path)) {
             System.IO.File.WriteAllBytes (path, bytes);
+            System.Diagnostics.Process.Start (@path);
+            currentSaveImagePath = path;
         }
-        return LoadPNG (path);
     }
 
-    public Texture2D LoadPNG (string filePath) {
+    public Texture2D LoadPNG (string filePath = "") {
+        if (string.IsNullOrEmpty (filePath)) {
+            filePath = currentSaveImagePath;
+        }
+
         Texture2D tex = null;
         byte[] fileData;
 

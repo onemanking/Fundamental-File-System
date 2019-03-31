@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class CameraController : MonoBehaviour {
-    public Transform target;
-
+    [SerializeField]
+    private Transform target;
     private float xOffset = 20;
 
     [Header ("ScreenShot")]
@@ -28,6 +28,7 @@ public class CameraController : MonoBehaviour {
     // Start is called before the first frame update
     void Start () {
         camera = Camera.main;
+        rawImage.gameObject.SetActive (false);
     }
 
     // Update is called once per frame
@@ -44,8 +45,6 @@ public class CameraController : MonoBehaviour {
             TakeScreenShot ();
         } else if (Input.GetKeyDown (KeyCode.Space)) {
             StartCoroutine (OpenFileBrowser ());
-        } else if (Input.GetKeyDown (KeyCode.O)) {
-            rawImage.texture = fileManager.LoadPNG (path);
         }
     }
 
@@ -57,7 +56,9 @@ public class CameraController : MonoBehaviour {
             Rect rect = new Rect (0, 0, renderTexture.width, renderTexture.height);
             texture.ReadPixels (rect, 0, 0);
 
-            rawImage.texture = fileManager.SavePNG (texture.EncodeToPNG ());
+            fileManager.SavePNG (texture.EncodeToPNG ());
+            rawImage.gameObject.SetActive (true);
+            rawImage.texture = fileManager.LoadPNG ();
 
             RenderTexture.ReleaseTemporary (renderTexture);
             camera.targetTexture = null;
@@ -71,7 +72,7 @@ public class CameraController : MonoBehaviour {
 
     public IEnumerator OpenFileBrowser () {
         // PREVENT SPACEBAR INPUT CLOSE DIALOG
-        yield return new WaitForSecondsRealtime (0.1f);
+        yield return new WaitForSecondsRealtime (0.2f);
         fileManager.FolderBrowserPanel ("Change Save location");
     }
 }
