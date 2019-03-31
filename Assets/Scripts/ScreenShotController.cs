@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CameraController : MonoBehaviour {
+public class ScreenShotController : MonoBehaviour {
     [SerializeField]
     private Transform target;
     private float xOffset = 20;
@@ -22,8 +22,6 @@ public class CameraController : MonoBehaviour {
     private Camera camera;
     private Texture2D currentImage;
     private bool takeScreenShot;
-
-    private string path;
 
     // Start is called before the first frame update
     void Start () {
@@ -57,8 +55,7 @@ public class CameraController : MonoBehaviour {
             texture.ReadPixels (rect, 0, 0);
 
             fileManager.SavePNG (texture.EncodeToPNG ());
-            rawImage.gameObject.SetActive (true);
-            rawImage.texture = fileManager.LoadPNG ();
+            SetImage (fileManager.LoadPNG ());
 
             RenderTexture.ReleaseTemporary (renderTexture);
             camera.targetTexture = null;
@@ -70,9 +67,16 @@ public class CameraController : MonoBehaviour {
         takeScreenShot = true;
     }
 
+    public void SetImage (Texture2D texture) {
+        Debug.Log("SETIMAGE");
+        rawImage.gameObject.SetActive (true);
+        rawImage.texture = texture;
+    }
+
     public IEnumerator OpenFileBrowser () {
         // PREVENT SPACEBAR INPUT CLOSE DIALOG
         yield return new WaitForSecondsRealtime (0.2f);
         fileManager.FolderBrowserPanel ("Change Save location");
     }
+
 }
